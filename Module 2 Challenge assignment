@@ -1,0 +1,306 @@
+Sub Stock_Information()
+
+
+
+'(Hopefully) makes the script run on each sheet but it least functions on each sheet. Hauser explained this on 7/10/23 see notebook.'
+
+Dim ws As Worksheet
+
+
+
+
+For Each ws In Worksheets
+
+    ws.Activate
+    
+
+
+
+
+
+'Establish headers for each column'
+
+Range("I1").Value = "Ticker"
+
+Range("J1").Value = "Yearly Change"
+
+Range("K1").Value = "Percent Change"
+
+Range("L1").Value = "Total Stock Volume"
+
+Range("O1").Value = "Ticker"
+
+Range("P1").Value = "Value"
+
+'These last three lines of code put headers top to bottom/vertically'
+
+Range("N2").Value = "Greatest % Increase"
+
+Range("N3").Value = "Greatest % Decrease"
+
+Range("N4").Value = "Greatest Total Volume"
+
+
+
+
+'Declare dim or dimensions which are used to declare variables'
+'*Double is used to store numbers that require decimal palces'
+'*Single is used to store values that do not exceed two-digit decimal palces'
+'*Long holds values or numbers that are longer than what the *Integer function can hold. *Long data holds values that exceed 32,728(***look into)'
+'*Integer is used to store whole numbers'
+'Reference:  Googled - What does (ex: Double) do in Excel'
+
+
+'Establish dimensions and declare variables (but not like Cthulhu dimension becuase that would be bad. Shoutout H.P. Lovecraft)'
+
+
+
+
+'Declare the variables for Ticker Symbols, Yearly Changes, Percent Changes and the Volume of stocks'
+
+Dim Ticker_Sym As String
+
+Dim Yearly_Change As Double
+
+Dim Percent_Change As Double
+
+Dim Stock_Volume As Double
+
+'Establishes the variables for the <open> (inital price) and <close> (closing/ending price)'
+
+Dim Beg_Value As Double
+
+Dim End_Value As Double
+
+'Establishes the variables for Greatest precent Increase, decrease and Total Volume'
+
+Dim GR_Per_Inc  As Double
+
+Dim GR_Per_Dec  As Double
+
+Dim GR__Tot_Volume As Double
+
+'Declares the Greatest increase ticker symbol, Greatest decrease ticker symbol, Greatest Total Volume ticker symbol and Ticker Symbol counter'
+
+Dim GR_Inc_Tick As String
+
+Dim GR_Dec_Tick As String
+
+Dim GR_Vol_Tick As String
+
+Dim Ticker_Count As Integer
+
+
+
+'These variables are used for determining the Greatst percent increase, Greatest percent decrease and Greatest total volume'
+
+Dim GR_Tickers As String
+
+Dim GR_Percentage_Changes As Double
+
+Dim GR_Volume As Double
+
+
+
+'Goes up the list. Hauser explained this code during after-class hours on 7/10/23 (Day 8) see notebook for details '
+
+Dim LastRow As Double
+
+LastRow = Cells(Rows.Count, "A").End(xlUp).Row
+
+
+
+'Sets the Greatest Ticker Counter range for increases and decreases and the Greatest Total Stock Volume'
+
+
+GR_Inc_Tick = Range("A2").Value
+
+GR_Dec_Tick = Range("A2").Value
+
+GR_Vol_Tick = Range("A2").Value
+
+
+''Establishes the inital opening amount for the first stock and sets starting values for other variables.(Unsure if this will transfer to other worksheets)'
+
+Beg_Value = Range("C2").Value
+
+Ticker_Count = 2
+
+Stock_Volume = 0
+
+GR_Per_Inc = 0
+
+GR_Per_Dec = 0
+
+GR_Total_Vol = 0
+
+
+
+
+
+
+For i = 2 To LastRow
+
+' <> is the left most value equal to the value on the right? Reference is Google; specifcally Quora'
+
+If (Cells(i, 1).Value <> Cells(i + 1, 1).Value) Then
+
+
+
+'Column A gives the Ticker Symbol new text'
+
+Ticker_Sym = Cells(i, 1).Value
+
+'Column G adds the variable amount to Stock Volume'
+
+Stock_Volume = Stock_Volume + Cells(i, 7).Value
+
+'Calculates the Yearly Change'
+
+End_Value = Range("F" & i).Value
+
+Yearly_Change = End_Value - Beg_Value
+
+'Determines the Percentage Changed with the stocks'
+
+Percent_Change = Yearly_Change / Beg_Value
+
+
+
+'Output Ticker Symbols'
+
+Range("I" & Ticker_Count).Value = Ticker_Sym
+
+'Output Total Stock Volume'
+
+Range("L" & Ticker_Count).Value = Stock_Volume
+
+'Output Yearly Price Change'
+
+Range("J" & Ticker_Count).Value = Yearly_Change
+
+
+'Don't recall if we went over specific color delarations in class so I looked it up https://www.automateexcel.com/excel-formatting/color-reference-for-color-index/'
+If (Yearly_Change > 0) Then
+
+Range("J" & Ticker_Count).Interior.ColorIndex = 4
+
+Else
+
+
+Range("J" & Ticker_Count).Interior.ColorIndex = 3
+
+End If
+
+
+
+
+'Output Percentage Change and change formating to a percentage. https://stackoverflow.com/questions/42844778/vba-for-each-cell-in-range-format-as-percentage'
+
+Range("K" & Ticker_Count).Value = Percent_Change
+
+Range("K" & Ticker_Count).NumberFormat = "0.00%"
+
+Ticker_Count = Ticker_Count + 1
+
+
+
+
+'Sets stock volume to 0 and provides the Begining Range for the Yearly Change values'
+
+Stock_Volume = 0
+
+Beg_Value = Range("C" & i + 1).Value
+
+
+Else
+
+
+Stock_Volume = Stock_Volume + Cells(i, 7).Value
+
+
+
+End If
+
+
+
+Next i
+
+
+
+
+
+For x = 2 To Ticker_Count
+
+
+GR_Percentage_Changes = Range("K" & x).Value
+
+GR_Tickers = Range("I" & x).Value
+
+GR__Tot_Volume = Range("L" & x).Value
+
+
+
+
+'Outputs: Greatest increase amount, Greatest decrease amount, Greatest volume amount'
+
+
+If (GR_Percentage_Changes > GR_Per_Inc) Then
+
+GR_Per_Inc = GR_Percentage_Changes
+
+GR_Inc_Tick = GR_Tickers
+
+End If
+
+If (GR_Per_Dec > GR_Percentage_Changes) Then
+
+GR_Per_Dec = GR_Percentage_Changes
+
+GR_Dec_Tick = GR_Tickers
+
+End If
+
+If (GR__Tot_Volume > GR_Volume) Then
+
+GR_Volume = GR__Tot_Volume
+
+GR_Vol_Tick = GR_Tickers
+
+End If
+
+Next x
+
+
+
+
+'Outputs: Greatest increase ticker, Greatest decrease ticker, Greatest volume ticker, Greatest percent increase, Greatest percent decrease and Greatest total volume'
+
+
+Range("O2").Value = GR_Inc_Tick
+
+Range("O3").Value = GR_Dec_Tick
+
+Range("O4").Value = GR_Vol_Tick
+
+Range("P2").Value = GR_Per_Inc
+
+Range("P2").NumberFormat = "0.00%"
+
+Range("P3").Value = GR_Per_Dec
+
+Range("P3").NumberFormat = "0.00%"
+
+Range("P4").Value = GR_Volume
+
+
+
+
+Next ws
+
+
+
+
+End Sub
+
+
